@@ -87,7 +87,8 @@ class QBash(QtGui.QPlainTextEdit):
 
         # Change the 'TERM' environment variable to 'linux' to ensure
         # that Bash does not internally disable the readline library.
-        self.envVars = {'TERM': 'linux', 'LANG': 'en_GB.UTF-8'}
+        self.envVars = {'TERM': 'linux', 'LANG': 'en_GB.UTF-8',
+                        'LINES': str(numLines), 'COLUMNS': str(numColumns)}
 
         # Use Monospace fonts and disable line wrapping.
         self.setFont(QtGui.QFont('Courier', 9))
