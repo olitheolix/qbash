@@ -5,7 +5,7 @@ import sys
 import argparse
 from PyQt4 import QtGui
 
-# Terminal size.
+# Terminal size in characters.
 numLines = 24
 numColumns = 80
 
@@ -19,7 +19,17 @@ import qbash.qbash as qbash
 # ----------------------------------------------------------------------
 # Setup the Qt application and start QBash.
 # ----------------------------------------------------------------------
+
+# Create the Qt application and QBash instance.
 QtApplicationInstance = QtGui.QApplication(sys.argv)
-mainWidget = qbash.QBash(numLines=numLines, numColumns=numColumns)
-mainWidget.show()
+widget = qbash.QBash(numLines=numLines, numColumns=numColumns)
+
+# Resize QBash widget to (approximately) show the screen.
+fmt = QtGui.QFontMetrics(widget.font())
+width = fmt.width('8') * numColumns
+height = fmt.height() * numLines
+widget.resize(width + 5, height + 20)
+
+# Show widget and launch Qt's event loop.
+widget.show()
 sys.exit(QtApplicationInstance.exec_())

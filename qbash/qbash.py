@@ -95,12 +95,6 @@ class QBash(QtGui.QPlainTextEdit):
         self.setFont(QtGui.QFont('Monospace'))
         self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)
 
-        # A rough guess on how large to make the window.
-        fmt = QtGui.QFontMetrics(self.font())
-        width = fmt.width('8') * numColumns
-        height = fmt.height() * numLines
-        self.resize(width, height + 20)
-
         # Start the Bash process.
         self.fd = self.forkShell()
 
