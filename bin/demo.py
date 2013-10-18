@@ -6,7 +6,7 @@ import argparse
 from PyQt4 import QtGui
 
 # Terminal size in characters.
-numLines = 24
+numLines = 25
 numColumns = 80
 
 # ----------------------------------------------------------------------
