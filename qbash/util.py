@@ -84,6 +84,8 @@ def QtKeyToAscii(event):
             return '\t'.encode('utf-8')
         elif event.key() == QtCore.Qt.Key_Backspace:
             return b'\x08'
+        elif event.key() == QtCore.Qt.Key_Space:
+            return ' '.encode('utf8')
         elif event.key() == QtCore.Qt.Key_Enter:
             return '\n'.encode('utf-8')
         elif event.key() == QtCore.Qt.Key_Home:
