@@ -38,8 +38,8 @@ class PollTerminal(QtCore.QObject):
     file descriptor of the Bash terminal.
     """
     # Signals to communicate with ``QBash``.
-    startWork = QtCore.pyqtSignal()
-    dataReady = QtCore.pyqtSignal(object)
+    startPolling = QtCore.pyqtSignal()
+    notify = QtCore.pyqtSignal(object)
 
     def __init__(self, fd, numLines, numColumns):
         super().__init__()
@@ -54,10 +54,10 @@ class PollTerminal(QtCore.QObject):
 
         # This slot will trigger the start function after this object was
         # moved into its own thread (see QBash constructor).
-        self.startWork.connect(self.start)
+        self.startPolling.connect(self.poll)
 
     @QtCore.pyqtSlot()
-    def start(self):
+    def poll(self):
         """
         Poll the Bash output, run it through Pyte, and notify the main applet.
         """
@@ -69,9 +69,12 @@ class PollTerminal(QtCore.QObject):
                 break
 
             # Feed output into Pyte's state machine and send the new screen
-            # output to the GUI thread.
+            # to the GUI thread.
             self.stream.feed(out)
-            self.dataReady.emit(self.screen)
+            self.notify.emit({'cmd': 'redraw', 'screen': self.screen})
+
+        # Polling stopped, most likely because the Bash was closed.
+        self.notify.emit({'cmd': 'exit'})
 
 
 class QBash(QtGui.QPlainTextEdit):
@@ -81,12 +84,13 @@ class QBash(QtGui.QPlainTextEdit):
     def __init__(self, *args, numLines=24, numColumns=80, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Specify the terminal size in terms of lines and columns.
+        # Backup the terminal size.
         self.numLines = numLines
         self.numColumns = numColumns
 
         # Change the 'TERM' environment variable to 'linux' to ensure
-        # that Bash does not internally disable the readline library.
+        # that Bash does not internally disable the readline
+        # library. Furthermore, specify the terminal size.
         self.envVars = {'TERM': 'linux', 'LANG': 'en_GB.UTF-8',
                         'LINES': str(numLines), 'COLUMNS': str(numColumns)}
 
@@ -101,10 +105,10 @@ class QBash(QtGui.QPlainTextEdit):
         # Create a Qt thread and push the ``PollTerminal`` instance into it.
         self.thread = QtCore.QThread()
         self.pollBash = PollTerminal(self.fd, self.numLines, self.numColumns)
-        self.pollBash.dataReady.connect(self.dataReady)
+        self.pollBash.notify.connect(self.notifyEvent)
         self.pollBash.moveToThread(self.thread)
         self.thread.start()
-        self.pollBash.startWork.emit()
+        self.pollBash.startPolling.emit()
 
     @QtCore.pyqtSlot(object)
     def keyPressEvent(self, event):
@@ -116,9 +120,28 @@ class QBash(QtGui.QPlainTextEdit):
         if code is not None:
             os.write(self.fd, code)
 
-    def dataReady(self, screenData):
+    @QtCore.pyqtSlot(object)
+    def notifyEvent(self, message):
         """
-        Render the new screen as text into the widget.
+        React to the signal sent from ``PollTerminal``.
+        """
+        if message['cmd'] == 'redraw':
+            self.redrawTerminal(message['screen'])
+        elif message['cmd'] == 'exit':
+            self.shellTerminated()
+        else:
+            pass
+        
+    def shellTerminated(self):
+        """
+        The shell was terminated - close the entire application.
+        """
+        self.thread.quit()
+        self.close()
+        
+    def redrawTerminal(self, screenData):
+        """
+        Render the Pyte output as text into the widget.
 
         This method is triggered via a signal from ``PollTerminal``.
         """
@@ -203,5 +226,4 @@ class QBash(QtGui.QPlainTextEdit):
                 return None
         else:
             # We are in the parent process.
-            print('Spawned Bash shell (PID {})'.format(childPID))
             return fd
