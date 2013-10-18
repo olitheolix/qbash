@@ -31,5 +31,7 @@ height = fmt.height() * numLines
 widget.resize(width + 5, height + 20)
 
 # Show widget and launch Qt's event loop.
+title = 'QBash Terminal ({}x{})'.format(numColumns, numLines)
+widget.setWindowTitle(title)
 widget.show()
 sys.exit(QtApplicationInstance.exec_())
