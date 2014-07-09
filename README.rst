@@ -29,7 +29,7 @@ Use the following commands to run the demo:
 
 .. code-block:: bash
 
-   git clone https://github.com/qtmacsdev/qbash.git
+   git clone https://github.com/olitheolix/qbash.git
    cd qbash/bin
    python3 demo.py
 
