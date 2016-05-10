@@ -78,6 +78,8 @@ def QtKeyToAscii(event):
     else:
         if event.key() == QtCore.Qt.Key_Return:
             return '\n'.encode('utf-8')
+        elif event.key() == QtCore.Qt.Key_Space:
+            return ' '.encode('utf-8')
         elif event.key() == QtCore.Qt.Key_Enter:
             return '\n'.encode('utf-8')
         elif event.key() == QtCore.Qt.Key_Tab:
