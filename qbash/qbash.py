@@ -202,7 +202,9 @@ class QBash(QtGui.QPlainTextEdit):
                 # be in interactive mode even though it is not
                 # directly connected to a screen (this ensures that
                 # it uses the readline library).
-                os.execlp('/bin/bash', 'qbash', '-i')
+                #os.execlp('/bin/bash', 'qbash', '-i')
+                shell=os.popen("echo -n $SHELL").read()
+                os.execlp(shell, 'qbash', '-i')
             except:
                 print('Error: Could not replace current process with Bash.')
                 return None
