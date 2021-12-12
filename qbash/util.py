@@ -19,7 +19,7 @@
 This module contains only constants to convert colours or key-codes.
 """
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 # Define the colours returned by Pyte in terms of QColor objects.
 colorCodesQt = {'black':   QtGui.QColor(0x00, 0x00, 0x00),
