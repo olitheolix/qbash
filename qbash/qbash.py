@@ -27,7 +27,7 @@ import sys
 import pty
 import pyte
 import qbash.util
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class PollTerminal(QtCore.QObject):
@@ -74,7 +74,7 @@ class PollTerminal(QtCore.QObject):
             self.dataReady.emit(self.screen)
 
 
-class QBash(QtGui.QPlainTextEdit):
+class QBash(QtWidgets.QPlainTextEdit):
     """
     Start ``PollTerminal`` process and render Pyte output as text.
     """
@@ -92,7 +92,7 @@ class QBash(QtGui.QPlainTextEdit):
         # Use Monospace fonts and disable line wrapping.
         self.setFont(QtGui.QFont('Courier', 9))
         self.setFont(QtGui.QFont('Monospace'))
-        self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)
+        self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
 
         # A rough guess on how large to make the window.
         fmt = QtGui.QFontMetrics(self.font())
@@ -137,8 +137,8 @@ class QBash(QtGui.QPlainTextEdit):
         # fore/back-ground colour. This batch-processing minimises the number
         # of Qt insertion calls because they are slow.
         text, lastFg, lastBg = '', 'default', 'default'
-        for lineData in screenData.buffer:
-            for ch in lineData:
+        for _, lineData in screenData.buffer.items():
+            for _, ch in lineData.items():
                 if (ch.fg != lastFg) or (ch.bg != lastBg):
                     # The fore/back-ground col-or for this character is
                     # different from the last one(s) --> insert the accumulated

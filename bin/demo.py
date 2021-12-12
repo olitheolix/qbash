@@ -3,7 +3,7 @@
 import os
 import sys
 import argparse
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 # Terminal size in characters.
 numLines = 25
@@ -21,7 +21,7 @@ import qbash.qbash as qbash
 # ----------------------------------------------------------------------
 
 # Create the Qt application and QBash instance.
-QtApplicationInstance = QtGui.QApplication(sys.argv)
+QtApplicationInstance = QtWidgets.QApplication(sys.argv)
 widget = qbash.QBash(numLines=numLines, numColumns=numColumns)
 
 # Resize QBash widget to (approximately) show the screen.
